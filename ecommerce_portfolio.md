@@ -41,20 +41,20 @@ This project showcases skills in data generation, SQL, DAX, and data visualizati
 
 # Generating random data
 
-import random
-from datetime import datetime, timedelta
-import csv
-from faker import Faker
+    import random
+    from datetime import datetime, timedelta
+    import csv
+    from faker import Faker
 
-fake = Faker()
+    fake = Faker()
 
-Set random seed for reproducibility
-random.seed(42)
-fake.seed_instance(42)
+    Set random seed for reproducibility
+    random.seed(42)
+    fake.seed_instance(42)
 
 Generate Customers
 
-def generate_customers(num_customers):
+    def generate_customers(num_customers):
     customers = []
     for i in range(1, num_customers + 1):
         customers.append({
@@ -70,7 +70,7 @@ def generate_customers(num_customers):
 
 Generate Products
 
-def generate_products(num_products):
+    def generate_products(num_products):
     categories = ['Electronics', 'Clothing', 'Home & Garden', 'Books', 'Sports']
     subcategories = {
         'Electronics': ['Smartphones', 'Laptops', 'Cameras', 'Accessories'],
@@ -95,7 +95,7 @@ def generate_products(num_products):
 
 Generate Orders and Order Details
 
-def generate_orders_and_details(num_orders, customers, products):
+    def generate_orders_and_details(num_orders, customers, products):
     orders = []
     order_details = []
     order_detail_id = 1
@@ -127,36 +127,36 @@ def generate_orders_and_details(num_orders, customers, products):
 
 Generate data
 
-num_customers = 1000
-num_products = 200
-num_orders = 10000
+    num_customers = 1000
+    num_products = 200
+    num_orders = 10000
 
-customers = generate_customers(num_customers)
-products = generate_products(num_products)
-orders, order_details = generate_orders_and_details(num_orders, customers, products)
+    customers = generate_customers(num_customers)
+    products = generate_products(num_products)
+    orders, order_details = generate_orders_and_details(num_orders, customers, products)
 
 Write data to CSV files
  
-def write_to_csv(data, filename):
+    def write_to_csv(data, filename):
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
         writer.writeheader()
         for row in data:
             writer.writerow(row)
 
-write_to_csv(customers, 'customers.csv')
-write_to_csv(products, 'products.csv')
-write_to_csv(orders, 'orders.csv')
-write_to_csv(order_details, 'order_details.csv')
+    write_to_csv(customers, 'customers.csv')
+    write_to_csv(products, 'products.csv')
+    write_to_csv(orders, 'orders.csv')
+    write_to_csv(order_details, 'order_details.csv')
 
-print("Data generation complete. CSV files have been created.")
+    print("Data generation complete. CSV files have been created.")
 
 
 # PostgreSQL
 
 Sales by Month
  
-SELECT 
+    SELECT 
     DATE_TRUNC('month', o.OrderDate) as Month,
     SUM(od.Quantity * p.UnitPrice * (1-od.Discount))::numeric(10,2) as Revenue
 FROM Orders o
