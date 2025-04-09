@@ -11,11 +11,11 @@ from faker import Faker
 
 fake = Faker()
 
-# Set random seed for reproducibility
+ Set random seed for reproducibility
 random.seed(42)
 fake.seed_instance(42)
 
-# Generate Customers
+ Generate Customers
 def generate_customers(num_customers):
     customers = []
     for i in range(1, num_customers + 1):
@@ -30,7 +30,7 @@ def generate_customers(num_customers):
         })
     return customers
 
-# Generate Products
+ Generate Products
 def generate_products(num_products):
     categories = ['Electronics', 'Clothing', 'Home & Garden', 'Books', 'Sports']
     subcategories = {
@@ -54,7 +54,7 @@ def generate_products(num_products):
         })
     return products
 
-# Generate Orders and Order Details
+ Generate Orders and Order Details
 def generate_orders_and_details(num_orders, customers, products):
     orders = []
     order_details = []
@@ -72,7 +72,7 @@ def generate_orders_and_details(num_orders, customers, products):
             'ShipMode': random.choice(['Standard', 'Express', 'Next Day'])
         })
         
-        # Generate 1 to 5 order details for each order
+         Generate 1 to 5 order details for each order
         for _ in range(random.randint(1, 5)):
             order_details.append({
                 'OrderDetailID': order_detail_id,
@@ -85,7 +85,7 @@ def generate_orders_and_details(num_orders, customers, products):
     
     return orders, order_details
 
-# Generate data
+ Generate data
 num_customers = 1000
 num_products = 200
 num_orders = 10000
@@ -94,7 +94,8 @@ customers = generate_customers(num_customers)
 products = generate_products(num_products)
 orders, order_details = generate_orders_and_details(num_orders, customers, products)
 
-# Write data to CSV files
+ Write data to CSV files
+ 
 def write_to_csv(data, filename):
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
@@ -110,9 +111,10 @@ write_to_csv(order_details, 'order_details.csv')
 print("Data generation complete. CSV files have been created.")
 
 
--- PostgreSQL
+# PostgreSQL
 
--- Sales by Month
+ Sales by Month
+ 
 SELECT 
     DATE_TRUNC('month', o.OrderDate) as Month,
     SUM(od.Quantity * p.UnitPrice * (1-od.Discount))::numeric(10,2) as Revenue
@@ -122,7 +124,8 @@ JOIN Products p ON od.ProductID = p.ProductID
 GROUP BY DATE_TRUNC('month', o.OrderDate)
 ORDER BY Month;
 
--- Sales Last 30 Days
+ Sales Last 30 Days
+ 
 SELECT 
     SUM(od.Quantity * p.UnitPrice * (1-od.Discount))::numeric(10,2) as Revenue
 FROM Orders o
@@ -130,7 +133,8 @@ JOIN OrderDetails od ON o.OrderID = od.OrderID
 JOIN Products p ON od.ProductID = p.ProductID
 WHERE o.OrderDate >= CURRENT_DATE - INTERVAL '30 days';
 
--- Monthly Growth Rate
+ Monthly Growth Rate
+ 
 WITH MonthlyRevenue AS (
     SELECT 
         DATE_TRUNC('month', o.OrderDate) as Month,
@@ -156,7 +160,8 @@ SELECT
 FROM MonthlyRevenue
 ORDER BY Month;
 
--- Top Selling Products
+ Top Selling Products
+ 
 SELECT 
     p.ProductName,
     p.Category,
@@ -167,7 +172,8 @@ JOIN OrderDetails od ON p.ProductID = od.ProductID
 GROUP BY p.ProductName, p.Category
 ORDER BY TotalRevenue DESC;
 
--- Lifetime value
+ Lifetime value
+ 
 SELECT 
     c.CustomerID,
     c.FirstName,
@@ -181,7 +187,8 @@ JOIN Products p ON od.ProductID = p.ProductID
 GROUP BY c.CustomerID, c.FirstName, c.LastName
 ORDER BY LifetimeValue DESC;
 
--- Retention rate
+ Retention rate
+ 
 WITH PreviousCustomers AS (
     SELECT DISTINCT CustomerID
     FROM Orders
@@ -204,7 +211,8 @@ SELECT
 FROM PreviousCustomers
 LEFT JOIN RetainedCustomers ON 1=1;
 
--- Avg shipping days
+ Avg shipping days
+ 
 SELECT 
     ShipMode,
     ROUND(AVG(ShipDate - OrderDate)::numeric, 2) as AvgShippingDays,
