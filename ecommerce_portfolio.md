@@ -260,3 +260,138 @@ Avg shipping days
     COUNT(*) as TotalOrders
     FROM Orders
     GROUP BY ShipMode;
+
+
+# DAX
+
+Basic Sales Metrics
+
+    Total Revenue = 
+    SUMX(
+    'public orderdetails',
+    'public orderdetails'[quantity] * 
+    RELATED('public products'[unitprice]) * 
+    (1-'public orderdetails'[discount])
+    )
+
+    Total Orders = 
+    COUNTROWS('public orders')
+
+    Total Customers = 
+    DISTINCTCOUNT('public orders'[customerid])
+
+    Average Order Value = 
+    DIVIDE(
+    [Total Revenue], 
+    [Total Orders],
+    0
+    )
+
+Time-based Calculations
+
+    MonthYear = 
+    FORMAT('public orders'[orderdate], "mmm yyyy")
+
+Customer Analysis
+
+    Active Customers = 
+    CALCULATE(
+    DISTINCTCOUNT('public orders'[customerid])
+    )
+
+    Returning Customers = 
+    CALCULATE(
+    DISTINCTCOUNT('public orders'[customerid]),
+    FILTER(
+        ALL('public orders'),
+        'public orders'[orderdate] <= MAX('DateTable'[Date]) &&
+        'public orders'[orderdate] > DATEADD('DateTable'[Date], -1, MONTH)
+    )
+    )
+
+    Monthly Retention Rate = 
+    DIVIDE(
+    [Returning Customers],
+    [Active Customers],
+    0
+    ) * 100
+
+    New Customers = 
+    CALCULATE(
+    DISTINCTCOUNT('public orders'[customerid]),
+    FILTER(
+        ALL('public orders'),
+        'public orders'[orderdate] = MAX('DateTable'[Date])
+    )
+    )
+
+    Customer Churn Rate = 
+    VAR PreviousMonthCustomers = 
+    CALCULATE(
+        DISTINCTCOUNT('public orders'[customerid]),
+        DATEADD('DateTable'[Date], -1, MONTH)
+    )
+    VAR ChurnedCustomers = PreviousMonthCustomers - [Returning Customers]
+    RETURN
+    DIVIDE(ChurnedCustomers, PreviousMonthCustomers, 0) * 100
+
+Product Performance
+
+    Total Products Sold = 
+    SUM('public orderdetails'[quantity])
+
+    Average Product Price = 
+    AVERAGE('public products'[unitprice])
+
+Date Table Creation
+
+    DateTable = CALENDARAUTO()
+
+Additional Sales Metrics
+
+    Sales YTD = 
+    TOTALYTD(
+    [Total Revenue],
+    'DateTable'[Date]
+    )
+
+    Previous Month Sales = 
+    CALCULATE(
+    [Total Revenue],
+    DATEADD('DateTable'[Date], -1, MONTH)
+    )
+
+    Sales Growth = 
+    VAR CurrentSales = [Total Revenue]
+    VAR PrevSales = [Previous Month Sales]
+    RETURN
+    DIVIDE(
+    CurrentSales - PrevSales,
+    PrevSales,
+    0
+    ) * 100
+
+Customer Purchase Frequency
+
+    Customers with Multiple Orders = 
+    CALCULATE(
+    DISTINCTCOUNT('public orders'[customerid]),
+    FILTER(
+        SUMMARIZE(
+            'public orders',
+            'public orders'[customerid],
+            "OrderCount", COUNT('public orders'[orderid])
+        ),
+        [OrderCount] > 1
+    )
+    )
+
+Average Items per Order
+
+    Avg Items per Order = 
+    DIVIDE(
+    SUM('public orderdetails'[quantity]),
+    COUNTROWS('public orders'),
+    0
+    )
+
