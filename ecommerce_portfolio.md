@@ -159,24 +159,24 @@ Sales by Month
     SELECT 
     DATE_TRUNC('month', o.OrderDate) as Month,
     SUM(od.Quantity * p.UnitPrice * (1-od.Discount))::numeric(10,2) as Revenue
-FROM Orders o
-JOIN OrderDetails od ON o.OrderID = od.OrderID
-JOIN Products p ON od.ProductID = p.ProductID
-GROUP BY DATE_TRUNC('month', o.OrderDate)
-ORDER BY Month;
+    FROM Orders o
+    JOIN OrderDetails od ON o.OrderID = od.OrderID
+    JOIN Products p ON od.ProductID = p.ProductID
+    GROUP BY DATE_TRUNC('month', o.OrderDate)
+    ORDER BY Month;
 
 Sales Last 30 Days
  
-SELECT 
+    SELECT 
     SUM(od.Quantity * p.UnitPrice * (1-od.Discount))::numeric(10,2) as Revenue
-FROM Orders o
-JOIN OrderDetails od ON o.OrderID = od.OrderID
-JOIN Products p ON od.ProductID = p.ProductID
-WHERE o.OrderDate >= CURRENT_DATE - INTERVAL '30 days';
+    FROM Orders o
+    JOIN OrderDetails od ON o.OrderID = od.OrderID
+    JOIN Products p ON od.ProductID = p.ProductID
+    WHERE o.OrderDate >= CURRENT_DATE - INTERVAL '30 days';
 
 Monthly Growth Rate
  
-WITH MonthlyRevenue AS (
+    WITH MonthlyRevenue AS (
     SELECT 
         DATE_TRUNC('month', o.OrderDate) as Month,
         SUM(od.Quantity * p.UnitPrice * (1-od.Discount))::numeric(10,2) as Revenue
@@ -184,8 +184,8 @@ WITH MonthlyRevenue AS (
     JOIN OrderDetails od ON o.OrderID = od.OrderID
     JOIN Products p ON od.ProductID = p.ProductID
     GROUP BY DATE_TRUNC('month', o.OrderDate)
-)
-SELECT 
+    )
+    SELECT 
     Month,
     Revenue,
     LAG(Revenue) OVER (ORDER BY Month) as PreviousMonthRevenue,
@@ -198,65 +198,65 @@ SELECT
             2
         )
     END as GrowthRate
-FROM MonthlyRevenue
-ORDER BY Month;
+    FROM MonthlyRevenue
+    ORDER BY Month;
 
 Top Selling Products
  
-SELECT 
+    SELECT 
     p.ProductName,
     p.Category,
     SUM(od.Quantity) as TotalQuantitySold,
     SUM(od.Quantity * p.UnitPrice * (1-od.Discount)) as TotalRevenue
-FROM Products p
-JOIN OrderDetails od ON p.ProductID = od.ProductID
-GROUP BY p.ProductName, p.Category
-ORDER BY TotalRevenue DESC;
+    FROM Products p
+    JOIN OrderDetails od ON p.ProductID = od.ProductID
+    GROUP BY p.ProductName, p.Category
+    ORDER BY TotalRevenue DESC;
 
 Lifetime value
  
-SELECT 
+    SELECT 
     c.CustomerID,
     c.FirstName,
     c.LastName,
     COUNT(DISTINCT o.OrderID) as TotalOrders,
     SUM(od.Quantity * p.UnitPrice * (1-od.Discount)) as LifetimeValue
-FROM Customers c
-JOIN Orders o ON c.CustomerID = o.CustomerID
-JOIN OrderDetails od ON o.OrderID = od.OrderID
-JOIN Products p ON od.ProductID = p.ProductID
-GROUP BY c.CustomerID, c.FirstName, c.LastName
-ORDER BY LifetimeValue DESC;
+    FROM Customers c
+    JOIN Orders o ON c.CustomerID = o.CustomerID
+    JOIN OrderDetails od ON o.OrderID = od.OrderID
+    JOIN Products p ON od.ProductID = p.ProductID
+    GROUP BY c.CustomerID, c.FirstName, c.LastName
+    ORDER BY LifetimeValue DESC;
 
 Retention rate
  
-WITH PreviousCustomers AS (
+    WITH PreviousCustomers AS (
     SELECT DISTINCT CustomerID
     FROM Orders
     WHERE OrderDate BETWEEN 
         CURRENT_DATE - INTERVAL '2 months' 
         AND CURRENT_DATE - INTERVAL '1 month'
-),
-RetainedCustomers AS (
+    ),
+    RetainedCustomers AS (
     SELECT DISTINCT CustomerID
     FROM Orders
     WHERE OrderDate >= CURRENT_DATE - INTERVAL '1 month'
     AND CustomerID IN (SELECT CustomerID FROM PreviousCustomers)
-)
-SELECT 
+    )
+    SELECT 
     ROUND(
         (COUNT(DISTINCT RetainedCustomers.CustomerID) * 100.0 / 
         NULLIF(COUNT(DISTINCT PreviousCustomers.CustomerID), 0))::numeric, 
         2
     ) as RetentionRate
-FROM PreviousCustomers
-LEFT JOIN RetainedCustomers ON 1=1;
+    FROM PreviousCustomers
+    LEFT JOIN RetainedCustomers ON 1=1;
 
 Avg shipping days
  
-SELECT 
+    SELECT 
     ShipMode,
     ROUND(AVG(ShipDate - OrderDate)::numeric, 2) as AvgShippingDays,
     COUNT(*) as TotalOrders
-FROM Orders
-GROUP BY ShipMode;
+    FROM Orders
+    GROUP BY ShipMode;
