@@ -1,5 +1,42 @@
-# ecommerce portfolio project
+# Ecommerce Portfolio Project
 
+E-commerce Data Analysis Project
+
+This project demonstrates the end-to-end process of creating a data analysis solution for an e-commerce business, from data generation to visualization.
+
+Key Steps:
+
+    Data Generation:
+        Created a Python script to generate realistic e-commerce data
+        Produced datasets for customers, products, orders, and order details
+
+    Database Setup:
+        Designed and implemented a PostgreSQL database schema
+        Created tables for customers, products, orders, and order details
+        Imported generated data into the database
+
+    SQL Analysis:
+        Developed SQL queries for key business metrics
+        Analyzed sales trends, customer behavior, and product performance
+
+    Power BI Integration:
+        Connected Power BI to the PostgreSQL database
+        Created a date table for time intelligence functions
+
+    DAX Measures:
+        Developed DAX measures for advanced metrics
+        Calculated KPIs such as Monthly Retention Rate, Customer Churn Rate, and New Customer Acquisition
+
+    Visualization:
+        Designed an interactive dashboard in Power BI
+        Created visualizations for sales trends, customer retention, and product performance
+        Implemented slicers and filters for dynamic data exploration
+
+    Insights and Recommendations:
+        Interpreted the visualized data to derive business insights
+        Formulated data-driven recommendations for improving sales and customer retention
+
+This project showcases skills in data generation, SQL, DAX, and data visualization, demonstrating the ability to transform raw data into actionable business insights.
 
 
 # Generating random data
